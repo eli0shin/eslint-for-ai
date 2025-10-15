@@ -5,6 +5,7 @@ import importX from 'eslint-plugin-import-x';
 import unusedImports from 'eslint-plugin-unused-imports';
 import globals from 'globals';
 import prettierConfig from 'eslint-config-prettier';
+import forAiPlugin from './dist/index.js';
 
 export default tseslint.config(
   // Global ignores
@@ -148,6 +149,13 @@ export default tseslint.config(
       '@typescript-eslint/no-empty-interface': 'off',
       '@typescript-eslint/no-empty-function': 'off',
     },
+  },
+
+  // AI-generated code rules - apply our own plugin
+  {
+    name: 'for-ai-rules',
+    files: ['**/*.ts'],
+    ...forAiPlugin.configs.recommended,
   },
 
   // Test files configuration

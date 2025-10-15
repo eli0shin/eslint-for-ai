@@ -1,4 +1,4 @@
-import { ESLintUtils, TSESTree, AST_NODE_TYPES } from '@typescript-eslint/utils';
+import { ESLintUtils, type TSESTree, AST_NODE_TYPES } from '@typescript-eslint/utils';
 
 const createRule = ESLintUtils.RuleCreator(
   (name) => `https://github.com/elioshinsky/eslint-for-ai/blob/main/docs/rules/${name}.md`
