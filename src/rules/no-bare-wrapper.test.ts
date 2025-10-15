@@ -1,5 +1,5 @@
 import { RuleTester } from '@typescript-eslint/rule-tester';
-import rule from '../../src/rules/no-bare-wrapper.js';
+import rule from './no-bare-wrapper.js';
 
 const ruleTester = new RuleTester();
 
