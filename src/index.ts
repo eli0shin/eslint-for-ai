@@ -1,4 +1,6 @@
 import noBareWrapper from './rules/no-bare-wrapper.js';
+import noInterface from './rules/no-interface.js';
+import noStandaloneClass from './rules/no-standalone-class.js';
 
 const plugin = {
   meta: {
@@ -8,6 +10,8 @@ const plugin = {
   configs: {},
   rules: {
     'no-bare-wrapper': noBareWrapper,
+    'no-interface': noInterface,
+    'no-standalone-class': noStandaloneClass,
   },
 };
 
@@ -19,6 +23,8 @@ plugin.configs = {
     },
     rules: {
       'for-ai/no-bare-wrapper': 'error',
+      'for-ai/no-interface': 'error',
+      'for-ai/no-standalone-class': 'error',
     },
   },
 };
