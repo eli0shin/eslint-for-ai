@@ -70,6 +70,7 @@ export default tseslint.config(
     plugins: {
       'import-x': importX,
       'unused-imports': unusedImports,
+      'for-ai': forAiPlugin,
     },
     settings: {
       'import-x/resolver': {
@@ -155,7 +156,7 @@ export default tseslint.config(
   {
     name: 'for-ai-rules',
     files: ['**/*.ts'],
-    ...forAiPlugin.configs.recommended,
+    rules: forAiPlugin.configs.recommended.rules,
   },
 
   // Test files configuration
