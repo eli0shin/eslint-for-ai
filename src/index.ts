@@ -1,4 +1,5 @@
 import noBareWrapper from './rules/no-bare-wrapper.js';
+import noCodeAfterTryCatch from './rules/no-code-after-try-catch.js';
 import noInterface from './rules/no-interface.js';
 import noStandaloneClass from './rules/no-standalone-class.js';
 
@@ -9,6 +10,7 @@ const plugin = {
   },
   rules: {
     'no-bare-wrapper': noBareWrapper,
+    'no-code-after-try-catch': noCodeAfterTryCatch,
     'no-interface': noInterface,
     'no-standalone-class': noStandaloneClass,
   },
@@ -16,6 +18,7 @@ const plugin = {
     recommended: {
       rules: {
         'for-ai/no-bare-wrapper': 'error',
+        'for-ai/no-code-after-try-catch': 'error',
         'for-ai/no-interface': 'error',
         'for-ai/no-standalone-class': 'error',
       },
