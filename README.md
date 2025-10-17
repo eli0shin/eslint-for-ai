@@ -39,6 +39,7 @@ export default [
     },
     rules: {
       'for-ai/no-bare-wrapper': 'error',
+      'for-ai/no-code-after-try-catch': 'error',
       'for-ai/no-interface': 'error',
       'for-ai/no-standalone-class': 'error'
     }
@@ -49,5 +50,6 @@ export default [
 ## Rules
 
 - **`for-ai/no-bare-wrapper`** - Disallows functions that just call another function without additional logic
+- **`for-ai/no-code-after-try-catch`** - Disallows code after try/catch/finally blocks in functions
 - **`for-ai/no-interface`** - Disallows TypeScript interfaces (prefer type aliases)
 - **`for-ai/no-standalone-class`** - Disallows classes that don't extend another class (prefer functions and types)
