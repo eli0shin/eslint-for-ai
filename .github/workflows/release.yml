@@ -28,3 +28,6 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: git push --follow-tags
+      - run: gh release create $(git describe --tags --abbrev=0) --generate-notes
+        env:
+          GH_TOKEN: ${{ github.token }}
