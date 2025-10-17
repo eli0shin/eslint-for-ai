@@ -1,6 +1,6 @@
 {
   "name": "eslint-for-ai",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "eslint rules that you would think are useless because any dev would know better than to write code like this but LLMs write stupid code all the time so these rules are for them.",
   "type": "module",
   "main": "./dist/index.js",
