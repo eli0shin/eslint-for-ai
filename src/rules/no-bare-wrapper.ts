@@ -89,12 +89,36 @@ function areArgumentsPassedThrough(
   return true;
 }
 
+function hasLiteralInCallee(callExpression: TSESTree.CallExpression): boolean {
+  const { callee } = callExpression;
+
+  // Check if the callee is a member expression (e.g., obj.method())
+  if (callee.type !== AST_NODE_TYPES.MemberExpression) {
+    return false;
+  }
+
+  const { object } = callee;
+
+  // Check if the object is a literal type
+  return (
+    object.type === AST_NODE_TYPES.Literal ||
+    object.type === AST_NODE_TYPES.ArrayExpression ||
+    object.type === AST_NODE_TYPES.ObjectExpression ||
+    object.type === AST_NODE_TYPES.TemplateLiteral
+  );
+}
+
 function isBareWrapper(node: FunctionNode): { isBare: boolean; callExpression?: TSESTree.CallExpression } {
   const body = node.body;
 
   // Arrow function with expression body: const x = (a) => foo(a)
   if (body.type !== AST_NODE_TYPES.BlockStatement) {
     if (body.type === AST_NODE_TYPES.CallExpression) {
+      // If the call expression has a literal in its callee, it's not a bare wrapper
+      if (hasLiteralInCallee(body)) {
+        return { isBare: false };
+      }
+
       if (areArgumentsPassedThrough(node.params, body.arguments)) {
         return { isBare: true, callExpression: body };
       }
@@ -121,6 +145,12 @@ function isBareWrapper(node: FunctionNode): { isBare: boolean; callExpression?: 
 
   // Return value must be a call expression
   if (!returnValue || returnValue.type !== AST_NODE_TYPES.CallExpression) {
+    return { isBare: false };
+  }
+
+  // If the call expression has a literal in its callee, it's not a bare wrapper
+  // Example: return /regex/.test(param) - the regex is the logic
+  if (hasLiteralInCallee(returnValue)) {
     return { isBare: false };
   }
 

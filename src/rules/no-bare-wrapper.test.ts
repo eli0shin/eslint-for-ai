@@ -81,6 +81,46 @@ ruleTester.run('no-bare-wrapper', rule, {
         }
       `,
     },
+    // Regex literal method call
+    {
+      code: `
+        function isIdentifierChar(char: string): boolean {
+          return /[a-zA-Z0-9_$]/.test(char);
+        }
+      `,
+    },
+    // Array literal method call
+    {
+      code: `
+        function isValidOption(option: string): boolean {
+          return ['option1', 'option2', 'option3'].includes(option);
+        }
+      `,
+    },
+    // String literal method call
+    {
+      code: `
+        function startsWithPrefix(text: string): boolean {
+          return "prefix".startsWith(text);
+        }
+      `,
+    },
+    // Object literal method call
+    {
+      code: `
+        function hasProperty(prop: string): boolean {
+          return { key: 'value', foo: 'bar' }.hasOwnProperty(prop);
+        }
+      `,
+    },
+    // Number literal method call
+    {
+      code: `
+        function formatNumber(decimals: number): string {
+          return (10).toFixed(decimals);
+        }
+      `,
+    },
   ],
   invalid: [
     // Classic bare wrapper - regular function
