@@ -44,11 +44,42 @@ function tryStatementReturnsInAllPaths(tryNode: TSESTree.TryStatement): boolean 
   return true;
 }
 
+function isStatement(node: TSESTree.Node): node is TSESTree.Statement {
+  // Check if node is a valid statement type
+  return (
+    node.type === AST_NODE_TYPES.BlockStatement ||
+    node.type === AST_NODE_TYPES.BreakStatement ||
+    node.type === AST_NODE_TYPES.ContinueStatement ||
+    node.type === AST_NODE_TYPES.DebuggerStatement ||
+    node.type === AST_NODE_TYPES.DoWhileStatement ||
+    node.type === AST_NODE_TYPES.EmptyStatement ||
+    node.type === AST_NODE_TYPES.ExpressionStatement ||
+    node.type === AST_NODE_TYPES.ForInStatement ||
+    node.type === AST_NODE_TYPES.ForOfStatement ||
+    node.type === AST_NODE_TYPES.ForStatement ||
+    node.type === AST_NODE_TYPES.FunctionDeclaration ||
+    node.type === AST_NODE_TYPES.IfStatement ||
+    node.type === AST_NODE_TYPES.LabeledStatement ||
+    node.type === AST_NODE_TYPES.ReturnStatement ||
+    node.type === AST_NODE_TYPES.SwitchStatement ||
+    node.type === AST_NODE_TYPES.ThrowStatement ||
+    node.type === AST_NODE_TYPES.TryStatement ||
+    node.type === AST_NODE_TYPES.VariableDeclaration ||
+    node.type === AST_NODE_TYPES.WhileStatement ||
+    node.type === AST_NODE_TYPES.WithStatement ||
+    node.type === AST_NODE_TYPES.ClassDeclaration ||
+    node.type === AST_NODE_TYPES.ExportAllDeclaration ||
+    node.type === AST_NODE_TYPES.ExportDefaultDeclaration ||
+    node.type === AST_NODE_TYPES.ExportNamedDeclaration ||
+    node.type === AST_NODE_TYPES.ImportDeclaration
+  );
+}
+
 function hasCodeAfterTryStatement(tryNode: TSESTree.TryStatement): boolean {
   const parent = tryNode.parent;
 
   // Check if parent is a block statement
-  if (!parent || parent.type !== AST_NODE_TYPES.BlockStatement) {
+  if (parent.type !== AST_NODE_TYPES.BlockStatement) {
     return false;
   }
 
@@ -62,10 +93,10 @@ function hasCodeAfterTryStatement(tryNode: TSESTree.TryStatement): boolean {
   // Case 2: Try/catch is nested, but both try and catch return/throw
   // Find the function body and check if there's code after the containing statement
   if (tryStatementReturnsInAllPaths(tryNode)) {
-    let current: TSESTree.Node | undefined = parent;
+    let current: TSESTree.Node = parent;
 
     // Walk up to find the function body
-    while (current) {
+    for (;;) {
       if (isFunctionNode(current)) {
         break;
       }
@@ -79,19 +110,23 @@ function hasCodeAfterTryStatement(tryNode: TSESTree.TryStatement): boolean {
 
         // Walk back down from tryNode to find the top-level statement in the function body
         let statementNode: TSESTree.Node = tryNode;
-        let statementParent: TSESTree.Node | undefined = statementNode.parent;
 
-        while (statementParent && statementParent !== functionBody) {
-          statementNode = statementParent;
-          statementParent = statementNode.parent;
+        while (statementNode.parent && statementNode.parent !== functionBody) {
+          statementNode = statementNode.parent;
         }
 
         // Check if there are statements after this top-level statement
         const statements = functionBody.body;
-        const statementIndex = statements.indexOf(statementNode as TSESTree.Statement);
-        return statementIndex !== -1 && statementIndex < statements.length - 1;
+        if (isStatement(statementNode)) {
+          const statementIndex = statements.indexOf(statementNode);
+          return statementIndex !== -1 && statementIndex < statements.length - 1;
+        }
+        return false;
       }
 
+      if (!currentParent) {
+        break;
+      }
       current = currentParent;
     }
   }

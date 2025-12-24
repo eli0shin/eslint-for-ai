@@ -10,6 +10,10 @@ const createRule = ESLintUtils.RuleCreator(
 
 type TestCallbackFunction = TSESTree.ArrowFunctionExpression | TSESTree.FunctionExpression;
 
+function isNode(value: unknown): value is TSESTree.Node {
+  return typeof value === 'object' && value !== null && 'type' in value;
+}
+
 function isTestFunction(node: TSESTree.CallExpression): boolean {
   const { callee } = node;
 
@@ -22,10 +26,6 @@ function isTestFunction(node: TSESTree.CallExpression): boolean {
 
 function getTestCallback(node: TSESTree.CallExpression): TestCallbackFunction | null {
   const callbackArg = node.arguments[1];
-
-  if (!callbackArg) {
-    return null;
-  }
 
   if (
     callbackArg.type === AST_NODE_TYPES.ArrowFunctionExpression ||
@@ -64,22 +64,20 @@ function findExpectCalls(callback: TestCallbackFunction): TSESTree.CallExpressio
       }
     }
 
-    for (const key of Object.keys(node)) {
+    for (const [key, child] of Object.entries(node)) {
       if (key === 'parent') {
         continue;
       }
 
-      const child = (node as unknown as Record<string, unknown>)[key];
-
       if (child && typeof child === 'object') {
         if (Array.isArray(child)) {
           for (const item of child) {
-            if (item && typeof item === 'object' && 'type' in item) {
-              walk(item as TSESTree.Node);
+            if (isNode(item)) {
+              walk(item);
             }
           }
-        } else if ('type' in child) {
-          walk(child as TSESTree.Node);
+        } else if (isNode(child)) {
+          walk(child);
         }
       }
     }
@@ -202,7 +200,7 @@ function isConstantMemberExpression(
       return false;
     }
 
-    if (def.type === 'Variable' && def.node.type === AST_NODE_TYPES.VariableDeclarator) {
+    if (def.type === 'Variable') {
       const init = def.node.init;
       if (!init) {
         return false;
@@ -283,12 +281,12 @@ function findExportedValue(
     return null;
   }
 
-  const symbol = (sourceFile as unknown as { symbol?: ts.Symbol }).symbol;
+  const typeChecker = program.getTypeChecker();
+  const symbol = typeChecker.getSymbolAtLocation(sourceFile);
   if (!symbol) {
     return null;
   }
 
-  const typeChecker = program.getTypeChecker();
   const exports = typeChecker.getExportsOfModule(symbol);
 
   const exportSymbol = exports.find((s: ts.Symbol) => s.getName() === exportName);
@@ -309,7 +307,7 @@ function findExportedValue(
   }
 
   const esTreeNode = parserServices.tsNodeToESTreeNodeMap.get(tsNode);
-  return esTreeNode ?? null;
+  return esTreeNode;
 }
 
 function traceImportToSource(
@@ -336,7 +334,12 @@ function traceImportToSource(
   let importedName: string;
 
   if (def.node.type === AST_NODE_TYPES.ImportSpecifier) {
-    importedName = (def.node.imported as TSESTree.Identifier).name;
+    // imported can be Identifier or Literal (for string imports like "weird-name")
+    if (def.node.imported.type === AST_NODE_TYPES.Identifier) {
+      importedName = def.node.imported.name;
+    } else {
+      importedName = String(def.node.imported.value);
+    }
   } else if (def.node.type === AST_NODE_TYPES.ImportDefaultSpecifier) {
     importedName = 'default';
   } else {
@@ -374,7 +377,7 @@ function traceIdentifierToValue(
     return traceImportToSource(def, currentFileName, scope, parserServices, visited);
   }
 
-  if (def.type === 'Variable' && def.node.type === AST_NODE_TYPES.VariableDeclarator) {
+  if (def.type === 'Variable') {
     const init = def.node.init;
     if (!init) {
       return false;

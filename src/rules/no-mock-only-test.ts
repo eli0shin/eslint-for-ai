@@ -14,6 +14,10 @@ const MOCK_ASSERTION_MATCHERS = new Set([
 
 type TestCallbackFunction = TSESTree.ArrowFunctionExpression | TSESTree.FunctionExpression;
 
+function isNode(value: unknown): value is TSESTree.Node {
+  return typeof value === 'object' && value !== null && 'type' in value;
+}
+
 function isTestFunction(node: TSESTree.CallExpression): boolean {
   const { callee } = node;
 
@@ -28,10 +32,6 @@ function getTestCallback(node: TSESTree.CallExpression): TestCallbackFunction | 
   // test('name', () => { ... })
   // First arg is test name, second is callback
   const callbackArg = node.arguments[1];
-
-  if (!callbackArg) {
-    return null;
-  }
 
   if (
     callbackArg.type === AST_NODE_TYPES.ArrowFunctionExpression ||
@@ -98,23 +98,21 @@ function findExpectCalls(callback: TestCallbackFunction): TSESTree.CallExpressio
     }
 
     // Recursively walk child nodes, avoiding parent references
-    for (const key of Object.keys(node)) {
+    for (const [key, child] of Object.entries(node)) {
       // Skip parent to avoid circular references
       if (key === 'parent') {
         continue;
       }
 
-      const child = (node as unknown as Record<string, unknown>)[key];
-
       if (child && typeof child === 'object') {
         if (Array.isArray(child)) {
           for (const item of child) {
-            if (item && typeof item === 'object' && 'type' in item) {
-              walk(item as TSESTree.Node);
+            if (isNode(item)) {
+              walk(item);
             }
           }
-        } else if ('type' in child) {
-          walk(child as TSESTree.Node);
+        } else if (isNode(child)) {
+          walk(child);
         }
       }
     }
