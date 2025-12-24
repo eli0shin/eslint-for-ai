@@ -3,16 +3,13 @@ import { findVariable } from '@typescript-eslint/utils/ast-utils';
 import { getParserServices } from '@typescript-eslint/utils/eslint-utils';
 import type { Scope } from '@typescript-eslint/utils/ts-eslint';
 import ts from 'typescript';
+import { isNode } from '../utils/ast.js';
 
 const createRule = ESLintUtils.RuleCreator(
   (name) => `https://github.com/elioshinsky/eslint-for-ai/blob/main/docs/rules/${name}.md`
 );
 
 type TestCallbackFunction = TSESTree.ArrowFunctionExpression | TSESTree.FunctionExpression;
-
-function isNode(value: unknown): value is TSESTree.Node {
-  return typeof value === 'object' && value !== null && 'type' in value;
-}
 
 function isTestFunction(node: TSESTree.CallExpression): boolean {
   const { callee } = node;

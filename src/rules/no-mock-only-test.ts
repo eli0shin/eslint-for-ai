@@ -1,4 +1,5 @@
 import { ESLintUtils, type TSESTree, AST_NODE_TYPES } from '@typescript-eslint/utils';
+import { isNode } from '../utils/ast.js';
 
 const createRule = ESLintUtils.RuleCreator(
   (name) => `https://github.com/elioshinsky/eslint-for-ai/blob/main/docs/rules/${name}.md`
@@ -13,10 +14,6 @@ const MOCK_ASSERTION_MATCHERS = new Set([
 ]);
 
 type TestCallbackFunction = TSESTree.ArrowFunctionExpression | TSESTree.FunctionExpression;
-
-function isNode(value: unknown): value is TSESTree.Node {
-  return typeof value === 'object' && value !== null && 'type' in value;
-}
 
 function isTestFunction(node: TSESTree.CallExpression): boolean {
   const { callee } = node;

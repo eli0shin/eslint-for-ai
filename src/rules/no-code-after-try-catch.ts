@@ -18,6 +18,10 @@ function isFunctionNode(node: TSESTree.Node | undefined): node is FunctionNode {
   );
 }
 
+function getNodeParent(node: TSESTree.Node): TSESTree.Node | undefined {
+  return node.parent;
+}
+
 function blockEndsWithReturnOrThrow(block: TSESTree.BlockStatement): boolean {
   if (block.body.length === 0) {
     return false;
@@ -96,15 +100,14 @@ function hasCodeAfterTryStatement(tryNode: TSESTree.TryStatement): boolean {
     let current: TSESTree.Node = parent;
 
     // Walk up to find the function body
-    for (;;) {
-      if (isFunctionNode(current)) {
+    while (!isFunctionNode(current)) {
+      const currentParent = getNodeParent(current);
+      if (!currentParent) {
         break;
       }
 
-      const currentParent: TSESTree.Node | undefined = current.parent;
-
       // If we found the function body block
-      if (currentParent && isFunctionNode(currentParent) && current.type === AST_NODE_TYPES.BlockStatement) {
+      if (isFunctionNode(currentParent) && current.type === AST_NODE_TYPES.BlockStatement) {
         // Find the statement in the function body that contains our try/catch
         const functionBody = current;
 
@@ -124,9 +127,6 @@ function hasCodeAfterTryStatement(tryNode: TSESTree.TryStatement): boolean {
         return false;
       }
 
-      if (!currentParent) {
-        break;
-      }
       current = currentParent;
     }
   }
