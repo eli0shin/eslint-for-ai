@@ -19,14 +19,14 @@ function getFunctionName(node: FunctionNode): string {
 
   // Arrow function assigned to a variable
   if (node.type === AST_NODE_TYPES.ArrowFunctionExpression) {
-    if (parent?.type === AST_NODE_TYPES.VariableDeclarator && parent.id.type === AST_NODE_TYPES.Identifier) {
+    if (parent.type === AST_NODE_TYPES.VariableDeclarator && parent.id.type === AST_NODE_TYPES.Identifier) {
       return parent.id.name;
     }
     return 'arrow function';
   }
 
   // Method definition in a class
-  if (parent?.type === AST_NODE_TYPES.MethodDefinition) {
+  if (parent.type === AST_NODE_TYPES.MethodDefinition) {
     if (parent.key.type === AST_NODE_TYPES.Identifier) {
       return parent.key.name;
     }

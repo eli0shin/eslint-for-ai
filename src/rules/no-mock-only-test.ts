@@ -1,4 +1,5 @@
 import { ESLintUtils, type TSESTree, AST_NODE_TYPES } from '@typescript-eslint/utils';
+import { isNode } from '../utils/ast.js';
 
 const createRule = ESLintUtils.RuleCreator(
   (name) => `https://github.com/elioshinsky/eslint-for-ai/blob/main/docs/rules/${name}.md`
@@ -28,10 +29,6 @@ function getTestCallback(node: TSESTree.CallExpression): TestCallbackFunction | 
   // test('name', () => { ... })
   // First arg is test name, second is callback
   const callbackArg = node.arguments[1];
-
-  if (!callbackArg) {
-    return null;
-  }
 
   if (
     callbackArg.type === AST_NODE_TYPES.ArrowFunctionExpression ||
@@ -98,23 +95,21 @@ function findExpectCalls(callback: TestCallbackFunction): TSESTree.CallExpressio
     }
 
     // Recursively walk child nodes, avoiding parent references
-    for (const key of Object.keys(node)) {
+    for (const [key, child] of Object.entries(node)) {
       // Skip parent to avoid circular references
       if (key === 'parent') {
         continue;
       }
 
-      const child = (node as unknown as Record<string, unknown>)[key];
-
       if (child && typeof child === 'object') {
         if (Array.isArray(child)) {
           for (const item of child) {
-            if (item && typeof item === 'object' && 'type' in item) {
-              walk(item as TSESTree.Node);
+            if (isNode(item)) {
+              walk(item);
             }
           }
-        } else if ('type' in child) {
-          walk(child as TSESTree.Node);
+        } else if (isNode(child)) {
+          walk(child);
         }
       }
     }
