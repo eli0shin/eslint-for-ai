@@ -101,7 +101,7 @@ Use these strict compiler options in your `tsconfig.json`:
 The recommended config enforces strict rules. For test files, you may want to relax some rules:
 
 ```javascript
-import forAiPlugin from 'eslint-for-ai';
+import forAi from 'eslint-for-ai';
 
 export default [
   // ... your main config ...
