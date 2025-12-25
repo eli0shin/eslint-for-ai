@@ -8,6 +8,11 @@ ESLint rules that you would think are useless because any dev would know better 
 npm install --save-dev eslint-for-ai
 ```
 
+## Requirements
+
+- ESLint 9+ (flat config format)
+- TypeScript project with `tsconfig.json`
+
 ## Usage
 
 Add the plugin to your ESLint flat config:
@@ -15,11 +20,16 @@ Add the plugin to your ESLint flat config:
 ```javascript
 import forAi from 'eslint-for-ai';
 
-export default [
-  ...forAi.configs.recommended,
-  // your overrides here
-];
+export default [...forAi.configs.recommended];
 ```
+
+The recommended config includes:
+- Default ignores for `**/dist/**` and `**/node_modules/**`
+- Type-aware linting enabled via `parserOptions.projectService`
+- TypeScript-ESLint recommended + strict rules
+- React and React Hooks rules
+- Import organization rules
+- 6 custom AI-focused rules
 
 Or configure only the `for-ai` rules (without bundled plugins):
 
