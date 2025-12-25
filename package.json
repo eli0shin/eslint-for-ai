@@ -34,19 +34,20 @@
   "license": "MIT",
   "dependencies": {
     "@eslint-react/eslint-plugin": "^2.4.0",
+    "@typescript-eslint/utils": "^8.50.1",
     "eslint-plugin-import-x": "^4.16.1",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
-    "typescript-eslint": "^8.46.1"
+    "typescript-eslint": "^8.50.1"
   },
   "peerDependencies": {
-    "eslint": "^9.0.0"
+    "eslint": "^9.0.0",
+    "typescript": "^5.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.37.0",
-    "@typescript-eslint/parser": "^8.46.1",
-    "@typescript-eslint/rule-tester": "^8.46.1",
-    "@typescript-eslint/utils": "^8.46.1",
+    "@typescript-eslint/parser": "^8.50.1",
+    "@typescript-eslint/rule-tester": "^8.50.1",
     "eslint": "^9.37.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-import-resolver-typescript": "^4.4.4",

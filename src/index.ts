@@ -27,11 +27,17 @@ const plugin = {
 };
 
 const recommended = tseslint.config(
+  { ignores: ["**/dist/**", "**/node_modules/**"] },
   ...tseslint.configs.recommended,
   ...tseslint.configs.strict,
   eslintReact.configs.recommended,
   {
     files: ["**/*.ts", "**/*.tsx"],
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+      },
+    },
     plugins: {
       "for-ai": plugin,
       "import-x": importX,
