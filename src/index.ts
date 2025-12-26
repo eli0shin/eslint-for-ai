@@ -44,6 +44,11 @@ const recommended = tseslint.config(
       react: reactPlugin,
       "react-hooks": reactHooksPlugin,
     },
+    settings: {
+      "import-x/resolver": {
+        typescript: true,
+      },
+    },
     rules: {
       // ============================================
       // eslint-for-ai rules
