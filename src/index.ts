@@ -3,6 +3,8 @@ import importX from "eslint-plugin-import-x";
 import reactPlugin from "eslint-plugin-react";
 import reactHooksPlugin from "eslint-plugin-react-hooks";
 import eslintReact from "@eslint-react/eslint-plugin";
+import prettierConfig from "eslint-config-prettier";
+import unusedImports from "eslint-plugin-unused-imports";
 
 import noBareWrapper from "./rules/no-bare-wrapper.js";
 import noCodeAfterTryCatch from "./rules/no-code-after-try-catch.js";
@@ -30,6 +32,7 @@ const recommended = tseslint.config(
   { ignores: ["**/dist/**", "**/node_modules/**"] },
   ...tseslint.configs.recommended,
   ...tseslint.configs.strict,
+  ...tseslint.configs.stylistic,
   eslintReact.configs.recommended,
   {
     files: ["**/*.ts", "**/*.tsx"],
@@ -41,13 +44,9 @@ const recommended = tseslint.config(
     plugins: {
       "for-ai": plugin,
       "import-x": importX,
+      "unused-imports": unusedImports,
       react: reactPlugin,
       "react-hooks": reactHooksPlugin,
-    },
-    settings: {
-      "import-x/resolver": {
-        typescript: true,
-      },
     },
     rules: {
       // ============================================
@@ -119,13 +118,23 @@ const recommended = tseslint.config(
         },
       ],
 
+      // Disabled rules - these are either handled by TypeScript or not useful
+      "@typescript-eslint/prefer-nullish-coalescing": "off",
+      "@typescript-eslint/explicit-function-return-type": "off",
+      "@typescript-eslint/explicit-module-boundary-types": "off",
+      "no-unused-vars": "off",
+      "no-undef": "off",
+
+      // Unused imports - auto-remove unused imports
+      "unused-imports/no-unused-imports": "error",
+
       // ============================================
       // Import rules
       // ============================================
       "import-x/first": "error",
       "import-x/no-dynamic-require": "error",
       "import-x/no-commonjs": "error",
-      "import-x/no-unresolved": "error",
+      "import-x/no-unresolved": "off",
       "import-x/no-duplicates": "error",
       "import-x/newline-after-import": ["error", { count: 1 }],
       "import-x/no-amd": "error",
@@ -166,6 +175,9 @@ const recommended = tseslint.config(
       "@eslint-react/no-nested-component-definitions": "error",
     },
   },
+
+  // Prettier - disable conflicting rules (must be last)
+  prettierConfig,
 );
 
 export default {
