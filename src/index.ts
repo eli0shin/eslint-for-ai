@@ -8,10 +8,12 @@ import unusedImports from "eslint-plugin-unused-imports";
 
 import noBareWrapper from "./rules/no-bare-wrapper.js";
 import noCodeAfterTryCatch from "./rules/no-code-after-try-catch.js";
+import noConditionalExpect from "./rules/no-conditional-expect.js";
 import noConstantAssertion from "./rules/no-constant-assertion.js";
 import noInterface from "./rules/no-interface.js";
 import noMockOnlyTest from "./rules/no-mock-only-test.js";
 import noStandaloneClass from "./rules/no-standalone-class.js";
+import noTryInTests from "./rules/no-try-in-tests.js";
 
 const plugin = {
   meta: {
@@ -21,10 +23,12 @@ const plugin = {
   rules: {
     "no-bare-wrapper": noBareWrapper,
     "no-code-after-try-catch": noCodeAfterTryCatch,
+    "no-conditional-expect": noConditionalExpect,
     "no-constant-assertion": noConstantAssertion,
     "no-interface": noInterface,
     "no-mock-only-test": noMockOnlyTest,
     "no-standalone-class": noStandaloneClass,
+    "no-try-in-tests": noTryInTests,
   },
 };
 
@@ -54,10 +58,12 @@ const recommended = tseslint.config(
       // ============================================
       "for-ai/no-bare-wrapper": "error",
       "for-ai/no-code-after-try-catch": "error",
+      "for-ai/no-conditional-expect": "error",
       "for-ai/no-constant-assertion": "error",
       "for-ai/no-interface": "error",
       "for-ai/no-mock-only-test": "error",
       "for-ai/no-standalone-class": "error",
+      "for-ai/no-try-in-tests": "error",
 
       // ============================================
       // Core ESLint rules
