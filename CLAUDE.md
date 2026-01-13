@@ -16,7 +16,7 @@ npm run build
 npm run test
 
 # Type-check without emitting files
-npm run type-check
+npm run type
 ```
 
 ## Architecture
@@ -29,12 +29,13 @@ npm run type-check
 
 - `src/index.ts` - Main plugin entry point, exports plugin object with rules and recommended config
 - `src/rules/` - Individual rule implementations using `@typescript-eslint/utils`
+- `src/rules/*.test.ts` - Rule tests co-located with implementations
 - `tests/setup.ts` - Configures RuleTester to use Vitest
-- `tests/rules/` - Rule tests using `@typescript-eslint/rule-tester`
 
 ### Rule Implementation Pattern
 
 Each rule follows this structure:
+
 - Uses `ESLintUtils.RuleCreator` from `@typescript-eslint/utils`
 - Leverages TypeScript AST (TSESTree) for analysis
 - Implements pure helper functions for code analysis (e.g., `isBareWrapper`, `areArgumentsPassedThrough`)
@@ -49,7 +50,7 @@ Each rule follows this structure:
 
 ## Adding New Rules
 
-1. Create test file in `tests/rules/{rule-name}.test.ts`
+1. Create test file in `src/rules/{rule-name}.test.ts` (co-located with implementation)
 2. Use `npm run test` for TDD workflow
 3. Create rule file in `src/rules/{rule-name}.ts`
 4. Import and register in `src/index.ts` (add to `rules` object and `recommended.rules`)

@@ -219,5 +219,65 @@ ruleTester.run('no-mock-only-test', rule, {
         },
       ],
     },
+    // test.skip with only mock assertions
+    {
+      code: `
+        test.skip('skipped test', () => {
+          const mockFn = vi.fn();
+          call(mockFn);
+          expect(mockFn).toHaveBeenCalled();
+        });
+      `,
+      errors: [
+        {
+          messageId: 'mockOnlyTest',
+        },
+      ],
+    },
+    // test.only with only mock assertions
+    {
+      code: `
+        test.only('focused test', () => {
+          const mockFn = vi.fn();
+          call(mockFn);
+          expect(mockFn).toHaveBeenCalled();
+        });
+      `,
+      errors: [
+        {
+          messageId: 'mockOnlyTest',
+        },
+      ],
+    },
+    // it.skip with only mock assertions
+    {
+      code: `
+        it.skip('skipped it', () => {
+          const mockFn = vi.fn();
+          call(mockFn);
+          expect(mockFn).toHaveBeenCalled();
+        });
+      `,
+      errors: [
+        {
+          messageId: 'mockOnlyTest',
+        },
+      ],
+    },
+    // it.only with only mock assertions
+    {
+      code: `
+        it.only('focused it', () => {
+          const mockFn = vi.fn();
+          call(mockFn);
+          expect(mockFn).toHaveBeenCalled();
+        });
+      `,
+      errors: [
+        {
+          messageId: 'mockOnlyTest',
+        },
+      ],
+    },
   ],
 });

@@ -225,5 +225,128 @@ ruleTester.run('no-try-in-tests', rule, {
       `,
       errors: [{ messageId: 'tryInTest' }],
     },
+    // test.skip with try-catch
+    {
+      code: `
+        test.skip('skipped test', () => {
+          try {
+            doSomething();
+          } catch (e) {}
+        });
+      `,
+      errors: [{ messageId: 'tryInTest' }],
+    },
+    // test.only with try-catch
+    {
+      code: `
+        test.only('focused test', () => {
+          try {
+            doSomething();
+          } catch (e) {}
+        });
+      `,
+      errors: [{ messageId: 'tryInTest' }],
+    },
+    // it.skip with try-catch
+    {
+      code: `
+        it.skip('skipped it', () => {
+          try {
+            doSomething();
+          } catch (e) {}
+        });
+      `,
+      errors: [{ messageId: 'tryInTest' }],
+    },
+    // it.only with try-catch
+    {
+      code: `
+        it.only('focused it', () => {
+          try {
+            doSomething();
+          } catch (e) {}
+        });
+      `,
+      errors: [{ messageId: 'tryInTest' }],
+    },
+    // describe with direct try-catch in callback
+    {
+      code: `
+        describe('suite', () => {
+          try {
+            setup();
+          } catch (e) {}
+        });
+      `,
+      errors: [{ messageId: 'tryInTest' }],
+    },
+    // describe.skip with try-catch
+    {
+      code: `
+        describe.skip('skipped suite', () => {
+          try {
+            setup();
+          } catch (e) {}
+        });
+      `,
+      errors: [{ messageId: 'tryInTest' }],
+    },
+    // describe.only with try-catch
+    {
+      code: `
+        describe.only('focused suite', () => {
+          try {
+            setup();
+          } catch (e) {}
+        });
+      `,
+      errors: [{ messageId: 'tryInTest' }],
+    },
+    // Nested describe with try-catch
+    {
+      code: `
+        describe('outer', () => {
+          describe('inner', () => {
+            try {
+              nestedSetup();
+            } catch (e) {}
+          });
+        });
+      `,
+      errors: [{ messageId: 'tryInTest' }],
+    },
+    // test.each with try-catch
+    {
+      code: `
+        test.each([1, 2, 3])('test %i', () => {
+          try {
+            doSomething();
+          } catch (e) {}
+        });
+      `,
+      errors: [{ messageId: 'tryInTest' }],
+    },
+    // it.each with try-catch
+    {
+      code: `
+        it.each([1, 2, 3])('test %i', () => {
+          try {
+            doSomething();
+          } catch (e) {}
+        });
+      `,
+      errors: [{ messageId: 'tryInTest' }],
+    },
+    // describe.each with try-catch
+    {
+      code: `
+        describe.each([1, 2])('suite %i', () => {
+          try {
+            setup();
+          } catch (e) {}
+        });
+      `,
+      errors: [{ messageId: 'tryInTest' }],
+    },
   ],
 });

@@ -235,5 +235,186 @@ ruleTester.run('no-conditional-expect', rule, {
       `,
       errors: [{ messageId: 'conditionalExpect' }],
     },
+    // test.skip with conditional expect
+    {
+      code: `
+        test.skip('skipped test', () => {
+          if (condition) {
+            expect(value).toBe(true);
+          }
+        });
+      `,
+      errors: [{ messageId: 'conditionalExpect' }],
+    },
+    // test.only with conditional expect
+    {
+      code: `
+        test.only('focused test', () => {
+          if (condition) {
+            expect(value).toBe(true);
+          }
+        });
+      `,
+      errors: [{ messageId: 'conditionalExpect' }],
+    },
+    // it.skip with conditional expect
+    {
+      code: `
+        it.skip('skipped it', () => {
+          if (condition) {
+            expect(value).toBe(true);
+          }
+        });
+      `,
+      errors: [{ messageId: 'conditionalExpect' }],
+    },
+    // it.only with conditional expect
+    {
+      code: `
+        it.only('focused it', () => {
+          if (condition) {
+            expect(value).toBe(true);
+          }
+        });
+      `,
+      errors: [{ messageId: 'conditionalExpect' }],
+    },
+    // describe with conditional expect in callback
+    {
+      code: `
+        describe('suite', () => {
+          if (condition) {
+            expect(something).toBe(true);
+          }
+        });
+      `,
+      errors: [{ messageId: 'conditionalExpect' }],
+    },
+    // describe.skip with conditional expect
+    {
+      code: `
+        describe.skip('skipped suite', () => {
+          if (condition) {
+            expect(something).toBe(true);
+          }
+        });
+      `,
+      errors: [{ messageId: 'conditionalExpect' }],
+    },
+    // describe.only with conditional expect
+    {
+      code: `
+        describe.only('focused suite', () => {
+          if (condition) {
+            expect(something).toBe(true);
+          }
+        });
+      `,
+      errors: [{ messageId: 'conditionalExpect' }],
+    },
+    // Nested describe with conditional expect
+    {
+      code: `
+        describe('outer', () => {
+          describe('inner', () => {
+            if (condition) {
+              expect(something).toBe(true);
+            }
+          });
+        });
+      `,
+      errors: [{ messageId: 'conditionalExpect' }],
+    },
+    // test.each with conditional expect
+    {
+      code: `
+        test.each([1, 2, 3])('test %i', (value) => {
+          if (value > 1) {
+            expect(value).toBeGreaterThan(1);
+          }
+        });
+      `,
+      errors: [{ messageId: 'conditionalExpect' }],
+    },
+    // it.each with conditional expect
+    {
+      code: `
+        it.each([1, 2, 3])('test %i', (value) => {
+          if (value > 1) {
+            expect(value).toBeGreaterThan(1);
+          }
+        });
+      `,
+      errors: [{ messageId: 'conditionalExpect' }],
+    },
+    // describe.each with conditional expect
+    {
+      code: `
+        describe.each([1, 2])('suite %i', () => {
+          if (condition) {
+            expect(something).toBe(true);
+          }
+        });
+      `,
+      errors: [{ messageId: 'conditionalExpect' }],
+    },
+    // Logical AND with expect
+    {
+      code: `
+        test('logical and', () => {
+          condition && expect(value).toBe(true);
+        });
+      `,
+      errors: [{ messageId: 'conditionalExpect' }],
+    },
+    // Logical OR with expect
+    {
+      code: `
+        test('logical or', () => {
+          condition || expect(value).toBe(true);
+        });
+      `,
+      errors: [{ messageId: 'conditionalExpect' }],
+    },
+    // Chained logical operators
+    {
+      code: `
+        test('chained logical', () => {
+          a && b && expect(value).toBe(true);
+        });
+      `,
+      errors: [{ messageId: 'conditionalExpect' }],
+    },
+    // expect.assertions in conditional
+    {
+      code: `
+        test('assertions in conditional', () => {
+          if (condition) {
+            expect.assertions(1);
+          }
+        });
+      `,
+      errors: [{ messageId: 'conditionalExpect' }],
+    },
+    // expect.hasAssertions in conditional
+    {
+      code: `
+        test('hasAssertions in conditional', () => {
+          if (condition) {
+            expect.hasAssertions();
+          }
+        });
+      `,
+      errors: [{ messageId: 'conditionalExpect' }],
+    },
+    // expect.assertions in logical AND
+    {
+      code: `
+        test('assertions in logical', () => {
+          condition && expect.assertions(1);
+        });
+      `,
+      errors: [{ messageId: 'conditionalExpect' }],
+    },
   ],
 });

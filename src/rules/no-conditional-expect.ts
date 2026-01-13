@@ -1,33 +1,9 @@
 import { ESLintUtils, type TSESTree, AST_NODE_TYPES } from '@typescript-eslint/utils';
+import { isInsideTestCallback, isTestFrameworkCall } from '../utils/test-detection.js';
 
 const createRule = ESLintUtils.RuleCreator(
   (name) => `https://github.com/elioshinsky/eslint-for-ai/blob/main/docs/rules/${name}.md`
 );
-
-function isInsideTestCallback(node: TSESTree.Node): boolean {
-  let current: TSESTree.Node | undefined = node.parent;
-
-  while (current) {
-    if (
-      (current.type === AST_NODE_TYPES.ArrowFunctionExpression ||
-        current.type === AST_NODE_TYPES.FunctionExpression) &&
-      current.parent.type === AST_NODE_TYPES.CallExpression
-    ) {
-      const callExpr = current.parent;
-      const callee = callExpr.callee;
-
-      if (callee.type === AST_NODE_TYPES.Identifier) {
-        if (callee.name === 'test' || callee.name === 'it') {
-          if (callExpr.arguments[1] === current) {
-            return true;
-          }
-        }
-      }
-    }
-    current = current.parent;
-  }
-  return false;
-}
 
 function isInsideConditional(node: TSESTree.Node): boolean {
   let current: TSESTree.Node | undefined = node.parent;
@@ -40,10 +16,8 @@ function isInsideConditional(node: TSESTree.Node): boolean {
       current.parent.type === AST_NODE_TYPES.CallExpression
     ) {
       const callExpr = current.parent;
-      if (callExpr.callee.type === AST_NODE_TYPES.Identifier) {
-        if (callExpr.callee.name === 'test' || callExpr.callee.name === 'it') {
-          break;
-        }
+      if (isTestFrameworkCall(callExpr.callee)) {
+        break;
       }
     }
 
@@ -60,17 +34,44 @@ function isInsideConditional(node: TSESTree.Node): boolean {
       return true;
     }
 
+    // Check for logical operators (&&, ||) - right side is conditionally executed
+    // e.g., condition && expect(value).toBe(true) - expect only runs if condition is truthy
+    if (current.type === AST_NODE_TYPES.LogicalExpression) {
+      return true;
+    }
+
     current = current.parent;
   }
   return false;
 }
 
+/**
+ * Checks if a node is an expect-related call that should be flagged in conditionals.
+ * Matches:
+ * - expect().matcher() - e.g., expect(value).toBe(true)
+ * - expect().not.matcher() - e.g., expect(value).not.toBe(false)
+ * - expect.assertions(n) - e.g., expect.assertions(1)
+ * - expect.hasAssertions() - e.g., expect.hasAssertions()
+ *
+ * Does NOT match bare expect() calls to avoid double-reporting.
+ * Bare expect() without a matcher is incomplete - it will be followed by a matcher
+ * call (e.g., .toBe()), and we report on that matcher call instead.
+ */
 function isExpectMatcherCall(node: TSESTree.CallExpression): boolean {
   const { callee } = node;
 
-  // Only match expect().matcher() or expect().not.matcher() patterns
-  // Don't match bare expect() calls to avoid double reporting
   if (callee.type === AST_NODE_TYPES.MemberExpression) {
+    // Check for expect.assertions() and expect.hasAssertions()
+    if (
+      callee.object.type === AST_NODE_TYPES.Identifier &&
+      callee.object.name === 'expect' &&
+      callee.property.type === AST_NODE_TYPES.Identifier &&
+      (callee.property.name === 'assertions' || callee.property.name === 'hasAssertions')
+    ) {
+      return true;
+    }
+
+    // Check for expect().matcher() or expect().not.matcher() patterns
     let obj: TSESTree.Node = callee.object;
 
     // Handle expect().not.matcher() - walk through member expressions
