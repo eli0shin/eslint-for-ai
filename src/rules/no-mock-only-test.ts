@@ -1,5 +1,6 @@
 import { ESLintUtils, type TSESTree, AST_NODE_TYPES } from '@typescript-eslint/utils';
 import { isNode } from '../utils/ast.js';
+import { isTestFrameworkCall } from '../utils/test-detection.js';
 
 const createRule = ESLintUtils.RuleCreator(
   (name) => `https://github.com/elioshinsky/eslint-for-ai/blob/main/docs/rules/${name}.md`
@@ -16,13 +17,10 @@ const MOCK_ASSERTION_MATCHERS = new Set([
 type TestCallbackFunction = TSESTree.ArrowFunctionExpression | TSESTree.FunctionExpression;
 
 function isTestFunction(node: TSESTree.CallExpression): boolean {
-  const { callee } = node;
-
-  if (callee.type === AST_NODE_TYPES.Identifier) {
-    return callee.name === 'test' || callee.name === 'it';
-  }
-
-  return false;
+  const result = isTestFrameworkCall(node.callee);
+  // Only match test/it, not describe - describe blocks group tests but don't
+  // contain assertions themselves, so mock-only detection doesn't apply to them
+  return result !== null && (result.name === 'test' || result.name === 'it');
 }
 
 function getTestCallback(node: TSESTree.CallExpression): TestCallbackFunction | null {
