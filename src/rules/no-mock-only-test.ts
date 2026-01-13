@@ -18,7 +18,8 @@ type TestCallbackFunction = TSESTree.ArrowFunctionExpression | TSESTree.Function
 
 function isTestFunction(node: TSESTree.CallExpression): boolean {
   const result = isTestFrameworkCall(node.callee);
-  // Only match test/it, not describe (describe blocks don't have assertions)
+  // Only match test/it, not describe - describe blocks group tests but don't
+  // contain assertions themselves, so mock-only detection doesn't apply to them
   return result !== null && (result.name === 'test' || result.name === 'it');
 }
 

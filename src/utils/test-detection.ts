@@ -73,8 +73,9 @@ export function isInsideTestCallback(node: TSESTree.Node): boolean {
       const frameworkCall = isTestFrameworkCall(callExpr.callee);
 
       if (frameworkCall) {
-        // Verify this is the second argument (the callback)
-        if (callExpr.arguments[1] === current) {
+        // Check if this function is an argument to the test call (typically the callback)
+        // Using includes() instead of checking specific index for robustness
+        if (callExpr.arguments.includes(current)) {
           return true;
         }
       }
