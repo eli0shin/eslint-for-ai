@@ -12,7 +12,7 @@ function isInsideTestCallback(node: TSESTree.Node): boolean {
     if (
       (current.type === AST_NODE_TYPES.ArrowFunctionExpression ||
         current.type === AST_NODE_TYPES.FunctionExpression) &&
-      current.parent?.type === AST_NODE_TYPES.CallExpression
+      current.parent.type === AST_NODE_TYPES.CallExpression
     ) {
       const callExpr = current.parent;
       const callee = callExpr.callee;
